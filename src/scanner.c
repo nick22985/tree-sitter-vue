@@ -154,7 +154,32 @@ static bool scan_comment(TSLexer *lexer) {
     }
     return false;
 }
-
+const char *get_end_delimiter(TagType type) {
+    switch (type) {
+        case SCRIPT:
+            return "</SCRIPT";
+        case STYLE:
+            return "</STYLE";
+        case COMPONENT:
+            return "</COMPONENT";
+        case DIRECTIVE:
+            return "</DIRECTIVE";
+        case ENDPOINT:
+            return "</ENDPOINT";
+        case FILTER:
+            return "</FILTER";
+        case MACGYVER:
+            return "</MACGYVER";
+        case SCHEMA:
+            return "</SCHEMA";
+        case SERVER:
+            return "</SERVER";
+        case SERVICE:
+            return "</SERVICE";
+        default:
+            return "</STYLE"; // Default case if none of the specified types match
+    }
+}
 static bool scan_raw_text(Scanner *scanner, TSLexer *lexer) {
     if (scanner->tags.size == 0) {
         return false;
@@ -162,7 +187,7 @@ static bool scan_raw_text(Scanner *scanner, TSLexer *lexer) {
 
     lexer->mark_end(lexer);
 
-    const char *end_delimiter = array_back(&scanner->tags)->type == SCRIPT ? "</SCRIPT" : "</STYLE";
+    const char *end_delimiter = get_end_delimiter(array_back(&scanner->tags)->type);
 
     unsigned delimiter_index = 0;
     while (lexer->lookahead) {
@@ -256,6 +281,14 @@ static bool scan_start_tag_name(Scanner *scanner, TSLexer *lexer) {
             lexer->result_symbol = TEMPLATE_START_TAG_NAME;
             break;
         case SCRIPT:
+        case COMPONENT:
+        case DIRECTIVE:
+        case ENDPOINT:
+        case FILTER:
+        case MACGYVER:
+        case SCHEMA:
+        case SERVER:
+        case SERVICE:
             lexer->result_symbol = SCRIPT_START_TAG_NAME;
             break;
         case STYLE:

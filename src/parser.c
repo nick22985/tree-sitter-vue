@@ -1,6 +1,7 @@
 #include "tree_sitter/parser.h"
 
 #if defined(__GNUC__) || defined(__clang__)
+#pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 #endif
 
@@ -4354,15 +4355,11 @@ bool tree_sitter_vue_external_scanner_scan(void *, TSLexer *, const bool *);
 unsigned tree_sitter_vue_external_scanner_serialize(void *, char *);
 void tree_sitter_vue_external_scanner_deserialize(void *, const char *, unsigned);
 
-#ifdef TREE_SITTER_HIDE_SYMBOLS
-#define TS_PUBLIC
-#elif defined(_WIN32)
-#define TS_PUBLIC __declspec(dllexport)
-#else
-#define TS_PUBLIC __attribute__((visibility("default")))
+#ifdef _WIN32
+#define extern __declspec(dllexport)
 #endif
 
-TS_PUBLIC const TSLanguage *tree_sitter_vue() {
+extern const TSLanguage *tree_sitter_vue(void) {
   static const TSLanguage language = {
     .version = LANGUAGE_VERSION,
     .symbol_count = SYMBOL_COUNT,
